@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Épisodes de C'est pas sorcier pour les petits curieux, rangés par thème avec un âge indicatif.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffc531'/%3E%3Ctext x='16' y='22.5' text-anchor='middle' font-family='Trebuchet MS,Arial,sans-serif' font-weight='700' font-size='16' fill='%233a2a00'%3E%3F!%3C/text%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>C'est pas sorcier Tube</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+/* Layout: une appli vidéo à trois zones (barre du haut, menu latéral des thèmes, mur de vignettes), et une page de lecture avec la suite du thème à droite. */
+:root {
+  --bg: #ffffff; --bg2: #f1f3f8; --bg3: #e2e6f0;
+  --ink: #141a2e; --muted: #5d6580; --line: #e3e7f0;
+  --accent: #ffc531; --accent-ink: #3a2a00;
+  --link: #2a62d6; --hover: rgba(20,26,46,.06);
+  --age4: #1f8a4c; --age4-bg: #def5e7;
+  --age5: #a35b00; --age5-bg: #fdebd0;
+  --age7: #6a3fb5; --age7-bg: #ece3fb;
+  --scrim: rgba(10,14,30,.45); --badge: rgba(10,14,30,.8);
+  --tint-s: 70%; --tint-l: 92%; --strong-l: 40%;
+  --display: "Fredoka", "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --top: 56px; --side: 240px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1220; --bg2: #1d2235; --bg3: #2c3350;
+  --ink: #eef1fb; --muted: #a3abc8; --line: #262c44;
+  --accent: #ffcf4d; --accent-ink: #2b1f00;
+  --link: #7ea6ff; --hover: rgba(255,255,255,.08);
+  --age4: #6fdc9c; --age4-bg: #163a28; --age5: #ffbf6b; --age5-bg: #3f2c12; --age7: #c3a5ff; --age7-bg: #2f2350;
+  --scrim: rgba(0,0,0,.6); --badge: rgba(0,0,0,.8);
+  --tint-s: 40%; --tint-l: 22%; --strong-l: 72%;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1220; --bg2: #1d2235; --bg3: #2c3350;
+  --ink: #eef1fb; --muted: #a3abc8; --line: #262c44;
+  --accent: #ffcf4d; --accent-ink: #2b1f00;
+  --link: #7ea6ff; --hover: rgba(255,255,255,.08);
+  --age4: #6fdc9c; --age4-bg: #163a28; --age5: #ffbf6b; --age5-bg: #3f2c12; --age7: #c3a5ff; --age7-bg: #2f2350;
+  --scrim: rgba(0,0,0,.6); --badge: rgba(0,0,0,.8);
+  --tint-s: 40%; --tint-l: 22%; --strong-l: 72%;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--ink); }
+body { margin: 0; font: 15px/1.45 var(--body); }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+svg { width: 24px; height: 24px; fill: currentColor; flex: none; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; border-radius: 8px; }
+
+/* barre du haut */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.top { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; height: var(--top); z-index: 20; background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+.left, .right { display: flex; align-items: center; gap: 6px; flex: none; }
+.icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; }
+.icon:hover { background: var(--hover); }
+.brand { display: flex; align-items: center; gap: 8px; font: 700 19px var(--display); letter-spacing: -.3px; white-space: nowrap; }
+.brand .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 15px; letter-spacing: 0; }
+.brand .tube { background: var(--ink); color: var(--bg); border-radius: 6px; padding: 0 6px; margin-left: 3px; }
+.search { flex: 0 1 600px; display: flex; min-width: 0; }
+.search input { flex: 1; min-width: 0; height: 40px; padding: 0 16px; font: 16px var(--body); color: var(--ink); background: var(--bg);
+  border: 1px solid var(--bg3); border-right: 0; border-radius: 40px 0 0 40px; outline: none; }
+.search input:focus { border-color: var(--link); }
+.search button { width: 60px; height: 40px; border: 1px solid var(--bg3); background: var(--bg2); border-radius: 0 40px 40px 0; display: grid; place-items: center; }
+.dice { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 18px; background: var(--accent); color: var(--accent-ink); font: 600 14px var(--display); white-space: nowrap; }
+.dice:hover { filter: brightness(1.05); }
+
+/* menu latéral */
+.side { position: fixed; top: calc(var(--top) + env(safe-area-inset-top, 0px)); bottom: 0; left: 0; width: var(--side); overflow-y: auto; z-index: 15;
+  background: var(--bg); padding: 8px 12px calc(16px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.side a { display: flex; align-items: center; gap: 16px; min-height: 40px; padding: 4px 12px; border-radius: 10px; }
+.side a:hover { background: var(--hover); }
+.side a[aria-current="page"] { background: var(--bg2); font-weight: 700; }
+.side a .lbl { flex: 1; min-width: 0; line-height: 1.25; overflow-wrap: anywhere; }
+.side a .n { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.side .av { width: 24px; height: 24px; }
+.side hr { border: 0; border-top: 1px solid var(--line); margin: 10px 0; }
+.side h4 { margin: 6px 12px 4px; font: 600 15px var(--display); }
+.side .fine { font-size: 12px; color: var(--muted); padding: 4px 12px; margin: 0; }
+.side .fine a { display: inline; padding: 0; min-height: 0; color: var(--link); }
+body.collapsed .side { width: 76px; padding-left: max(4px, env(safe-area-inset-left, 0px)); padding-right: 4px; }
+body.collapsed .side a { flex-direction: column; gap: 4px; font-size: 10px; padding: 14px 0 12px; text-align: center; }
+body.collapsed .side a .lbl { white-space: normal; }
+body.collapsed .side .themes-nav, body.collapsed .side hr, body.collapsed .side h4, body.collapsed .side .fine, body.collapsed .side a .n { display: none; }
+.veil { position: fixed; inset: 0; background: var(--scrim); z-index: 14; }
+
+/* zone principale */
+main { padding-top: var(--top); padding-left: calc(var(--side) + 12px); padding-right: max(24px, env(safe-area-inset-right, 0px)); padding-bottom: 48px; min-width: 0; }
+body.collapsed main { padding-left: calc(76px + 12px); }
+.chips { position: sticky; top: calc(var(--top) + env(safe-area-inset-top, 0px)); z-index: 10; background: var(--bg);
+  display: flex; gap: 10px; align-items: center; padding-block: 10px 12px; overflow-x: auto; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; height: 32px; padding: 0 12px; border-radius: 8px; background: var(--bg2); font: 600 14px var(--body); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.chip:hover { background: var(--bg3); }
+.chip[aria-pressed="true"], .chip[aria-current="true"] { background: var(--ink); color: var(--bg); }
+.chip .dot { width: 9px; height: 9px; border-radius: 50%; }
+.chips .sep { flex: none; width: 1px; height: 24px; background: var(--line); }
+.switch { flex: none; display: inline-flex; align-items: center; gap: 8px; font: 600 14px var(--body); color: var(--muted); white-space: nowrap; cursor: pointer; padding: 0 4px; }
+.switch input { width: 17px; height: 17px; accent-color: var(--link); margin: 0; }
+
+.pagehead { display: flex; align-items: center; gap: 18px; padding: 18px 0 8px; flex-wrap: wrap; }
+.pagehead .big { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; flex: none; border: 4px solid hsl(var(--h) 70% var(--strong-l)); }
+.pagehead h1 { font-size: clamp(24px, 3.4vw, 34px); }
+.pagehead p { margin: 4px 0 0; color: var(--muted); max-width: 64ch; }
+.pagehead .txt { min-width: 0; flex: 1 1 260px; }
+.shelf-h { display: flex; align-items: baseline; gap: 10px; margin: 18px 0 2px; }
+.shelf-h h2 { font-size: 21px; }
+.shelf-h span { color: var(--muted); font-size: 14px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px 16px; padding-top: 12px; }
+.vcard { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.thumb { position: relative; display: block; aspect-ratio: 16 / 9; max-width: 100%; border-radius: 12px; overflow: hidden; background: hsl(var(--h) var(--tint-s) var(--tint-l)); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .2s ease; }
+.vcard:hover .thumb img { transform: scale(1.03); }
+.dur { position: absolute; right: 7px; bottom: 7px; font: 700 12px var(--body); color: #fff; background: var(--badge); padding: 1px 6px; border-radius: 5px; font-variant-numeric: tabular-nums; }
+.start { position: absolute; left: 7px; top: 7px; font: 600 12px var(--display); color: var(--accent-ink); background: var(--accent); padding: 2px 8px; border-radius: 6px; }
+.seenbar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--link); }
+.vcard.is-seen .thumb img { opacity: .6; }
+.vmeta { display: flex; gap: 12px; align-items: flex-start; }
+.av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex: none; background: var(--bg2); }
+.vt { min-width: 0; flex: 1; }
+.vt h3 { font: 600 16px/1.3 var(--display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.vt .who { color: var(--muted); font-size: 13.5px; margin-top: 3px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.vt .who a:hover { color: var(--ink); }
+.pill { display: inline-flex; align-items: center; font: 700 11.5px var(--body); padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.a4 { color: var(--age4); background: var(--age4-bg); }
+.pill.a5 { color: var(--age5); background: var(--age5-bg); }
+.pill.a7 { color: var(--age7); background: var(--age7-bg); }
+.empty { color: var(--muted); padding: 48px 0; text-align: center; max-width: 52ch; margin: 0 auto; }
+.empty strong { display: block; color: var(--ink); font: 600 19px var(--display); margin-bottom: 6px; }
+
+/* page de lecture */
+.watch { display: flex; gap: 24px; padding-top: 20px; max-width: 1600px; }
+.primary { flex: 1; min-width: 0; }
+.secondary { width: 400px; flex: none; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.player { position: relative; aspect-ratio: 16 / 9; max-width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+.player iframe { width: 100%; height: 100%; border: 0; display: block; }
+.player .poster { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(.7); }
+.player .go { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; color: #fff; text-align: center; padding: 16px; }
+.player .go .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); font: 600 17px var(--display); padding: 12px 22px; border-radius: 28px; }
+.player .go small { font-size: 13px; opacity: .9; max-width: 44ch; }
+.watch h1 { font-size: 22px; line-height: 1.25; margin: 14px 0 10px; }
+.wbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.chan { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.chan .av { width: 42px; height: 42px; }
+.chan b { font: 600 16px var(--display); display: block; }
+.chan span { color: var(--muted); font-size: 13px; }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.act { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 18px; background: var(--bg2); font-weight: 600; font-size: 14px; white-space: nowrap; }
+.act svg { width: 20px; height: 20px; }
+.act:hover { background: var(--bg3); }
+.act[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.desc { background: var(--bg2); border-radius: 12px; padding: 12px 14px; margin-top: 14px; font-size: 14px; display: grid; gap: 6px; }
+.desc p { margin: 0; max-width: 72ch; }
+.desc .k { font-weight: 700; }
+.desc a { color: var(--link); }
+.secondary h2 { font-size: 17px; margin-bottom: 2px; }
+.srow { display: flex; gap: 10px; min-width: 0; }
+.srow .thumb { width: 168px; flex: none; border-radius: 8px; }
+.srow .vt h3 { font-size: 14.5px; }
+.srow .vt .who { font-size: 12.5px; }
+.srow.now { opacity: .55; pointer-events: none; }
+
+/* pages texte */
+.about { max-width: 68ch; padding-top: 18px; display: grid; gap: 14px; }
+.about h1 { font-size: 30px; }
+.about h2 { font-size: 20px; margin-top: 8px; }
+.about p, .about ul { margin: 0; }
+.about ul { padding-left: 20px; display: grid; gap: 4px; }
+.about a { color: var(--link); }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; }
+.stat { background: var(--bg2); border-radius: 12px; padding: 10px 16px; min-width: 120px; }
+.stat b { display: block; font: 600 24px var(--display); font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 13px; }
+.seg { display: inline-flex; background: var(--bg2); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--bg); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.linkbtn { color: var(--link); font-weight: 600; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
+  background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; }
+
+@media (max-width: 1100px) {
+  .watch { flex-direction: column; }
+  .secondary { width: 100%; }
+}
+@media (max-width: 860px) {
+  .side { width: var(--side); transform: translateX(-100%); transition: transform .2s ease; box-shadow: 0 0 24px rgba(0,0,0,.2); }
+  body.drawer .side { transform: none; }
+  body.collapsed .side { width: var(--side); }
+  main, body.collapsed main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  body.collapsed .side a { flex-direction: row; gap: 20px; font-size: inherit; padding: 4px 12px; text-align: left; }
+  body.collapsed .side a .lbl { white-space: normal; }
+  body.collapsed .side .themes-nav, body.collapsed .side h4, body.collapsed .side .fine, body.collapsed .side a .n { display: revert; }
+  body.collapsed .side hr { display: block; }
+}
+@media (max-width: 640px) {
+  .dice .t, .brand .full { display: none; }
+  .search button { width: 46px; }
+  .grid { grid-template-columns: 1fr; gap: 24px; }
+  .watch { padding-top: 0; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); }
+  .watch .primary > *:not(.player), .secondary { padding-left: 16px; padding-right: 16px; }
+  .player { border-radius: 0; }
+  .srow .thumb { width: 150px; }
+}
+@media (max-width: 420px) {
+  .brand .tube { display: none; }
+  .top { gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .thumb img, .side { transition: none; } .vcard:hover .thumb img { transform: none; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="left">
+    <button class="icon" id="menu" type="button" aria-label="Afficher ou masquer le menu"><svg viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button>
+    <a class="brand" href="#" data-go="home" aria-label="C'est pas sorcier Tube, accueil"><span class="mark">?!</span><span class="full">C'est pas sorcier</span><span class="tube">Tube</span></a>
+  </div>
+  <form class="search" id="searchForm" role="search">
+    <input id="q" type="search" placeholder="Chercher : requin, train, lune…" aria-label="Chercher un épisode" autocomplete="off">
+    <button type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24"><path d="M20.87 20.17l-5.59-5.59A6.96 6.96 0 0 0 17 10a7 7 0 1 0-7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/></svg></button>
+  </form>
+  <div class="right">
+    <button class="dice" id="dice" type="button" aria-label="Épisode au hasard"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM7.5 18a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0-9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 4.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 4.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0-9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg><span class="t">Au hasard !</span></button>
+  </div>
+</header>
+
+<nav class="side" id="side" aria-label="Menu"></nav>
+<div class="veil" id="veil" hidden></div>
+<main id="main"></main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const DATA = {"listed":"2026-10-23","themes":[{"key":"dinos","name":"Dinosaures et préhistoire","desc":"Des os géants, des mammouths et les premiers humains.","hue":28},{"key":"ferme","name":"À la ferme","desc":"Vaches, poules, chevaux et abeilles : les animaux qu'on peut aller voir.","hue":95},{"key":"sauvages","name":"Animaux sauvages","desc":"Du hérisson du jardin au gorille de la forêt.","hue":150},{"key":"betes","name":"Petites bêtes","desc":"Fourmis, papillons, escargots… à observer ensuite dans l'herbe.","hue":75},{"key":"mer","name":"Sous la mer","desc":"Dauphins, requins, poulpes et méduses.","hue":200},{"key":"route","name":"Trains, voitures et chantiers","desc":"Tout ce qui roule, et les ponts et tunnels pour passer.","hue":12},{"key":"airs","name":"Dans les airs","desc":"Avions géants, hélicoptères et montgolfières.","hue":210},{"key":"eau","name":"Bateaux","desc":"Paquebots, voiliers, phares et grands navires.","hue":225},{"key":"secours","name":"Pompiers et secours","desc":"Les héros du quotidien et leurs engins.","hue":2},{"key":"histoire","name":"Chevaliers et grands monuments","desc":"La suite des châteaux forts : cités, Gaulois et monuments.","hue":40},{"key":"espace","name":"L'espace","desc":"La Lune, le Soleil, les fusées et les étoiles.","hue":255},{"key":"terre","name":"Volcans, météo et saisons","desc":"La Terre qui gronde, l'orage, la neige et les saisons.","hue":18},{"key":"corps","name":"Mon corps","desc":"Les dents, le sommeil, les os et les muscles.","hue":340},{"key":"miam","name":"Miam !","desc":"D'où viennent le chocolat, le pain, le fromage et les bonbons.","hue":55},{"key":"maison","name":"Comment ça marche ?","desc":"L'eau du robinet, l'électricité, les poubelles.","hue":175},{"key":"fete","name":"Cirque, jouets et spectacles","desc":"Le cirque, les manèges, les dessins animés et les robots.","hue":315}],"episodes":[{"id":"__Gch5i5OOQ","t":"dinos","age":4,"pick":true,"title":"Sur les traces des dinosaures","min":26},{"id":"yrS0nbR_rrU","t":"dinos","age":4,"pick":false,"title":"Des dinosaures sous nos pieds","min":26},{"id":"JtulDX0nwQI","t":"dinos","age":5,"pick":false,"title":"Comment ont disparu les dinosaures ?","min":26},{"id":"GGJrISryHoM","t":"dinos","age":5,"pick":false,"title":"Mammouths : la parole est à la défense","min":26},{"id":"XCuwbi4kssc","t":"dinos","age":5,"pick":false,"title":"Les mammifères, nés dans l'ombre des dinosaures","min":26},{"id":"S0-6syqOxdU","t":"dinos","age":5,"pick":false,"title":"Les hommes préhistoriques","min":26},{"id":"Tac73B-IN0c","t":"dinos","age":7,"pick":false,"title":"Lucy, Neandertal, Cro-Magnon","min":26},{"id":"DNSG7U5haU4","t":"ferme","age":4,"pick":true,"title":"Ah, les vaches !","min":26},{"id":"O-Yn0WdEIdc","t":"ferme","age":4,"pick":false,"title":"Poules et coqs en stock","min":26},{"id":"8eQ0f1eQGGs","t":"ferme","age":4,"pick":false,"title":"Les œufs","min":26},{"id":"QdWrfTy0qO0","t":"ferme","age":4,"pick":false,"title":"Une journée à la ferme","min":25},{"id":"s9RtAdEY9I0","t":"ferme","age":4,"pick":false,"title":"La vie d'un cheval","min":26},{"id":"cIhyqCPZprA","t":"ferme","age":4,"pick":false,"title":"Qui miel me suive (les abeilles)","min":26},{"id":"af1EvEtgsuY","t":"ferme","age":5,"pick":false,"title":"Le Cadre Noir : les grands chevaux","min":26},{"id":"Q2IFCAsMTR0","t":"sauvages","age":4,"pick":true,"title":"Les hérissons","min":26},{"id":"vrr3Gw3R_Hs","t":"sauvages","age":4,"pick":false,"title":"Pandas géants superstars","min":26},{"id":"RAbTYst4e2M","t":"sauvages","age":4,"pick":false,"title":"Les ours","min":26},{"id":"ZSZy2JGW4Fo","t":"sauvages","age":4,"pick":false,"title":"Tortues : quand carapaces passent","min":26},{"id":"ihpsBF8nvFo","t":"sauvages","age":4,"pick":false,"title":"Les crocodiles","min":26},{"id":"sFCXbycUUXk","t":"sauvages","age":4,"pick":false,"title":"Rencontre avec les gorilles","min":26},{"id":"FVd2BV1elOE","t":"sauvages","age":4,"pick":false,"title":"Un zoo pas si bête !","min":26},{"id":"vOWfE8SSBKg","t":"sauvages","age":4,"pick":false,"title":"Chiens de traîneau","min":26},{"id":"fcO15FTRh_0","t":"sauvages","age":4,"pick":false,"title":"Rats, souris, hamsters","min":26},{"id":"DNwNVu3Sqhg","t":"sauvages","age":5,"pick":false,"title":"Entre chiens et loups","min":26},{"id":"0TzcKioh2rg","t":"sauvages","age":5,"pick":false,"title":"Serpents : des reptiles qui ont du charme","min":26},{"id":"8f3Txe6mjag","t":"sauvages","age":5,"pick":false,"title":"Chauves-souris : le monde à l'envers","min":26},{"id":"k7wQgXjGtj8","t":"sauvages","age":5,"pick":false,"title":"Amphibiens","min":26},{"id":"AlEyz1Ur3VA","t":"sauvages","age":5,"pick":false,"title":"Pourquoi les aigles volent à 250 km/h ?","min":26},{"id":"4Psgj2AIUcY","t":"betes","age":4,"pick":true,"title":"Les fourmis","min":26},{"id":"Qf0y99eogAc","t":"betes","age":4,"pick":false,"title":"Papillons","min":26},{"id":"G_zNM_7fJCE","t":"betes","age":4,"pick":false,"title":"Opération escargot","min":26},{"id":"wR_OD1stTCY","t":"betes","age":5,"pick":false,"title":"Face aux phasmes : de drôles d'insectes","min":26},{"id":"kiiuEvONFAc","t":"betes","age":5,"pick":false,"title":"Araignées","min":26},{"id":"mVXD4VadEOE","t":"betes","age":5,"pick":false,"title":"Écologie d'une mare","min":26},{"id":"R55-7sofuYQ","t":"betes","age":7,"pick":false,"title":"Mouches : les sorciers prennent la mouche","min":26},{"id":"XSyQCbKl4ns","t":"betes","age":7,"pick":false,"title":"Un moustique, ça trompe énormément","min":26},{"id":"Ci64dLXMKi4","t":"mer","age":4,"pick":true,"title":"Dauphins","min":27},{"id":"RiYf6cl-j7g","t":"mer","age":4,"pick":false,"title":"Grands aquariums : une fenêtre sur l'océan","min":26},{"id":"QKQzs5KooKY","t":"mer","age":4,"pick":false,"title":"Au bord de la mer : coquillages et crustacés","min":26},{"id":"84C-XA3knak","t":"mer","age":5,"pick":false,"title":"Requins","min":26},{"id":"7YxsCCj5NC8","t":"mer","age":5,"pick":false,"title":"Poulpes fiction","min":26},{"id":"HR7HojWY-kg","t":"mer","age":5,"pick":false,"title":"Méduses","min":26},{"id":"HkCcaxaflH8","t":"mer","age":5,"pick":false,"title":"Le grand voyage des tortues de mer","min":26},{"id":"uiEg1Gptg7U","t":"mer","age":7,"pick":false,"title":"Baleines menacées","min":26},{"id":"buhngDUi298","t":"mer","age":7,"pick":false,"title":"Coraux : les sorciers cherchent la petite bête","min":26},{"id":"xyzVCTxSg0c","t":"mer","age":7,"pick":false,"title":"À l'heure des marées","min":26},{"id":"_ZZMViMDjto","t":"route","age":4,"pick":true,"title":"Le TGV","min":26},{"id":"eP3P9FjuOUM","t":"route","age":4,"pick":false,"title":"À fond de train","min":26},{"id":"qp7Wva3SeFI","t":"route","age":4,"pick":false,"title":"Voitures de course","min":28},{"id":"5wwE7xjVR4Y","t":"route","age":5,"pick":false,"title":"Les gares : les sorciers mènent bon train","min":26},{"id":"zHHFQtlHqkc","t":"route","age":5,"pick":false,"title":"Le métro","min":25},{"id":"NV1LfueHFoA","t":"route","age":5,"pick":false,"title":"La moto","min":26},{"id":"0u9Ar3HmnU8","t":"route","age":5,"pick":false,"title":"Quand les camions prennent le train","min":26},{"id":"hqaGARKqgqI","t":"route","age":5,"pick":false,"title":"Les sorciers taillent la route","min":26},{"id":"ujwYjL1OdQc","t":"route","age":5,"pick":false,"title":"Les ponts","min":26},{"id":"pB72hsu4QYg","t":"route","age":5,"pick":false,"title":"Les ascenseurs","min":26},{"id":"QeDLBAuw030","t":"route","age":7,"pick":false,"title":"Le tunnel sous la Manche","min":26},{"id":"Cqo8VDyDRAE","t":"route","age":7,"pick":false,"title":"Le viaduc de Millau","min":26},{"id":"_uUovqLQAz0","t":"airs","age":4,"pick":true,"title":"A380, le nouveau géant du ciel","min":26},{"id":"ULeMFoy-aq4","t":"airs","age":4,"pick":false,"title":"Hélicoptères","min":26},{"id":"yVDT6UQ1IgY","t":"airs","age":5,"pick":false,"title":"Ballons, c'est gonflé (montgolfières)","min":28},{"id":"hjCDtTDWmgQ","t":"airs","age":5,"pick":false,"title":"Avion de chasse","min":29},{"id":"E6aVekbpSbs","t":"airs","age":5,"pick":false,"title":"La patrouille de France","min":26},{"id":"GNCeq4JyO74","t":"airs","age":5,"pick":false,"title":"Les aéroports","min":26},{"id":"2kkdicKaJK0","t":"airs","age":5,"pick":false,"title":"Dirigeables, navires du ciel","min":27},{"id":"p2BcLdRwZ54","t":"airs","age":7,"pick":false,"title":"Moteurs d'avion : ça va décoller !","min":26},{"id":"Y2q6m5F387M","t":"eau","age":4,"pick":true,"title":"Les plus gros navires du monde","min":26},{"id":"FVHwbjSM638","t":"eau","age":5,"pick":false,"title":"Les phares","min":26},{"id":"8nqpsoXFD-s","t":"eau","age":5,"pick":false,"title":"Les grands vaisseaux des rois","min":26},{"id":"c7ccyaXsm4c","t":"eau","age":5,"pick":false,"title":"Les grands voiliers de course","min":26},{"id":"WzcndV6AeIc","t":"eau","age":5,"pick":false,"title":"Le porte-avions Charles de Gaulle","min":26},{"id":"30g5zRwaL8Q","t":"eau","age":7,"pick":false,"title":"Du Normandy au Queen Mary : les paquebots","min":26},{"id":"CRWaQHrW0KY","t":"eau","age":7,"pick":false,"title":"Les sous-marins nucléaires","min":28},{"id":"-hW5E3zLzoI","t":"secours","age":4,"pick":true,"title":"Au feu les pompiers","min":26},{"id":"mw-LW9Pj7t4","t":"secours","age":5,"pick":false,"title":"Au feu !","min":26},{"id":"tb20wOzUHpM","t":"secours","age":5,"pick":false,"title":"De l'hydravion aux Canadair","min":26},{"id":"1H1cN9-g0MQ","t":"secours","age":5,"pick":false,"title":"Chiens experts","min":26},{"id":"yvMrSs2S72g","t":"secours","age":5,"pick":false,"title":"L'hôpital de la tête aux pieds","min":27},{"id":"rAxHAKNbtu0","t":"secours","age":7,"pick":false,"title":"Secourisme : les gestes qui sauvent","min":26},{"id":"0nitKRzjE_o","t":"secours","age":7,"pick":false,"title":"Avalanche !","min":26},{"id":"dybWx0kAYJE","t":"histoire","age":4,"pick":false,"title":"Les châteaux forts","min":26},{"id":"N9PyrqXpMDo","t":"histoire","age":4,"pick":true,"title":"Carcassonne : une cité au temps des chevaliers","min":26},{"id":"PF3UKqHQnQE","t":"histoire","age":5,"pick":false,"title":"Les Gaulois","min":28},{"id":"2wpqoI41heI","t":"histoire","age":5,"pick":false,"title":"Au temps des Gaulois","min":26},{"id":"617_B-rHzLc","t":"histoire","age":5,"pick":false,"title":"Le Louvre : du château fort au grand musée","min":26},{"id":"x1vHz1hh6Gs","t":"histoire","age":5,"pick":false,"title":"La tour Eiffel","min":27},{"id":"-yoacYfPrUs","t":"histoire","age":5,"pick":false,"title":"Le musée Grévin","min":26},{"id":"Pk_7n1BCSSg","t":"histoire","age":7,"pick":false,"title":"Les châteaux de la Loire","min":28},{"id":"152Yprx1WDs","t":"histoire","age":7,"pick":false,"title":"Bâtisseurs de cathédrales","min":26},{"id":"EEItmFyJAKY","t":"histoire","age":7,"pick":false,"title":"Pont du Gard et arènes de Nîmes","min":26},{"id":"G77rc1ikwx4","t":"histoire","age":7,"pick":false,"title":"Cités englouties d'Égypte","min":26},{"id":"XFmG6ku-C8g","t":"histoire","age":7,"pick":false,"title":"Sous le soleil de Versailles","min":26},{"id":"3ye7BxnqAEc","t":"histoire","age":7,"pick":false,"title":"Les Mayas","min":29},{"id":"K2JuMsP6EV4","t":"espace","age":4,"pick":true,"title":"Les sorciers décrochent la lune","min":26},{"id":"F2zOHTOQg_U","t":"espace","age":5,"pick":false,"title":"Le Soleil","min":26},{"id":"L029mQsKlxM","t":"espace","age":5,"pick":false,"title":"Pleins feux sur le système solaire","min":27},{"id":"FbK-FPwSAFQ","t":"espace","age":5,"pick":false,"title":"La tête dans les étoiles","min":26},{"id":"NVj0WzlPVV8","t":"espace","age":5,"pick":false,"title":"Ariane 5","min":27},{"id":"jmXWeUSBb2U","t":"espace","age":7,"pick":false,"title":"Comètes et astéroïdes","min":28},{"id":"yuBxzyndcDs","t":"espace","age":7,"pick":false,"title":"L'homme dans l'espace : histoire d'une conquête","min":26},{"id":"EYgll-IUdyM","t":"espace","age":7,"pick":false,"title":"Kourou, aux portes de l'espace","min":26},{"id":"NMXLmBGiL7M","t":"espace","age":7,"pick":false,"title":"Les satellites","min":26},{"id":"-LNT_6K9S5M","t":"espace","age":7,"pick":false,"title":"La Terre vue de l'espace","min":26},{"id":"0C-Gw-F7zkA","t":"terre","age":4,"pick":true,"title":"Les volcans","min":28},{"id":"95Tp3mSibFc","t":"terre","age":4,"pick":false,"title":"L'automne","min":26},{"id":"Ttv18dujxZE","t":"terre","age":4,"pick":false,"title":"C'est le printemps !","min":26},{"id":"YEmPmCEqEqE","t":"terre","age":5,"pick":false,"title":"Orages : les sorciers ont le coup de foudre","min":26},{"id":"8PMYjn838FA","t":"terre","age":5,"pick":false,"title":"La Réunion, dans les entrailles du volcan","min":26},{"id":"uoLLLkK9o0k","t":"terre","age":5,"pick":false,"title":"Grottes, gouffres et abîmes","min":27},{"id":"To4u3eAfFRk","t":"terre","age":5,"pick":false,"title":"Tous à la neige","min":26},{"id":"Iynq4jZz1x0","t":"terre","age":5,"pick":false,"title":"Au cœur de la forêt tropicale","min":26},{"id":"p2B-T4Gt6VY","t":"terre","age":7,"pick":false,"title":"Descente au cœur des glaciers","min":27},{"id":"c0UsOlqG_Xk","t":"terre","age":7,"pick":false,"title":"Séismes : quand la Terre tremble","min":27},{"id":"tAOCLReDoLs","t":"terre","age":7,"pick":false,"title":"Faire la pluie et le beau temps","min":25},{"id":"ADOuLZPoF0Y","t":"terre","age":7,"pick":false,"title":"Sahara, le plus grand des déserts","min":26},{"id":"fMTrXPWQhT0","t":"corps","age":4,"pick":true,"title":"Dent pour dent","min":26},{"id":"eqDTm2zpsoE","t":"corps","age":4,"pick":false,"title":"Le sommeil","min":26},{"id":"IzbcwsHy4v8","t":"corps","age":5,"pick":false,"title":"Squelette : les sorciers tombent sur un os","min":26},{"id":"XKwLo8HKE5Y","t":"corps","age":5,"pick":false,"title":"Muscles et souplesse","min":26},{"id":"7OmnJQWvYXI","t":"corps","age":5,"pick":false,"title":"Comment nos oreilles font pour entendre ?","min":26},{"id":"WL6x76WzqCY","t":"corps","age":5,"pick":false,"title":"Les sorciers se font la main","min":26},{"id":"DpPE4Ks6V2o","t":"corps","age":5,"pick":false,"title":"Rhumes, otites, angines","min":26},{"id":"vQi3VMuzVjY","t":"corps","age":7,"pick":false,"title":"Œil pour œil","min":26},{"id":"drSiOlmp7N4","t":"corps","age":7,"pick":false,"title":"Nos poumons","min":26},{"id":"s7SuTXiGupQ","t":"corps","age":7,"pick":false,"title":"Histoires de cœur","min":26},{"id":"wh0msae36s0","t":"corps","age":7,"pick":false,"title":"Bébés : histoire d'une naissance","min":26},{"id":"-pfcvGtVwOM","t":"miam","age":4,"pick":true,"title":"Les secrets du chocolat","min":26},{"id":"gdajFlDZ3B4","t":"miam","age":4,"pick":false,"title":"Du blé au pain","min":26},{"id":"FNvKshhLE1o","t":"miam","age":4,"pick":false,"title":"Bonbons : c'est si bon… ?!","min":26},{"id":"xguEgpLQV3k","t":"miam","age":4,"pick":false,"title":"Les bananes","min":26},{"id":"OiD2vU9QqmQ","t":"miam","age":4,"pick":false,"title":"Fruits et légumes","min":26},{"id":"RbdxFksSwws","t":"miam","age":5,"pick":false,"title":"Tout un fromage","min":26},{"id":"k6J9wbOhtkM","t":"miam","age":5,"pick":false,"title":"Les produits laitiers","min":28},{"id":"oEtqLJOgT28","t":"miam","age":5,"pick":false,"title":"Histoires de pommes de terre","min":26},{"id":"jWTtmChsBn0","t":"miam","age":5,"pick":false,"title":"Cacao et chocolat","min":26},{"id":"k6gsIXRkbZc","t":"miam","age":7,"pick":false,"title":"Le sucre","min":26},{"id":"FxNgr19_Gk8","t":"miam","age":7,"pick":false,"title":"Vanille : un goût qui vient de loin","min":26},{"id":"MECmgIz36nU","t":"maison","age":5,"pick":true,"title":"Une seconde vie pour nos poubelles","min":26},{"id":"5LC6gyBH8xE","t":"maison","age":5,"pick":false,"title":"D'où vient l'eau qu'on boit ?","min":26},{"id":"efQW-ZmpyZs","t":"maison","age":5,"pick":false,"title":"L'électricité","min":26},{"id":"ww6QJNiOn4c","t":"maison","age":7,"pick":false,"title":"Le verre dans tous ses états","min":26},{"id":"4ZW4tX4qSHg","t":"maison","age":7,"pick":false,"title":"Le papier","min":26},{"id":"YO9njdtskik","t":"maison","age":7,"pick":false,"title":"Le bois : hêtre ou ne pas hêtre","min":27},{"id":"P-VTfLDiMWM","t":"maison","age":7,"pick":false,"title":"Lumières et illusions","min":26},{"id":"7lWevAdzOgo","t":"fete","age":4,"pick":true,"title":"Tous en piste : le cirque","min":26},{"id":"UQgeQMIaYig","t":"fete","age":4,"pick":false,"title":"Au pays des jouets","min":26},{"id":"WzllnHTAROU","t":"fete","age":4,"pick":false,"title":"Manèges : le grand frisson","min":26},{"id":"EuGmmxUhElE","t":"fete","age":5,"pick":false,"title":"Feux d'artifice : c'est le bouquet !","min":26},{"id":"Ag_16Iqq8T4","t":"fete","age":5,"pick":false,"title":"Il était Toon fois… le dessin animé","min":26},{"id":"nKp0hxmPalE","t":"fete","age":5,"pick":false,"title":"Les robots","min":26},{"id":"Ba_MpUJy5Hg","t":"fete","age":5,"pick":false,"title":"Les sorciers font du ski","min":26},{"id":"TZJxosX2mzM","t":"fete","age":7,"pick":false,"title":"Accordons nos violons","min":28},{"id":"paJiChDCG_8","t":"fete","age":7,"pick":false,"title":"La peinture","min":26},{"id":"xo3nJ6geylU","t":"fete","age":7,"pick":false,"title":"La magie des effets spéciaux","min":28}]};
+const THUMB = id => `thumbs/${id}.jpg`;
+const CAN_EMBED = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:";
+const AGE_LABEL = { 4: "4 ans +", 5: "5-6 ans", 7: "7 ans +" };
+const AGE_HINT = { 4: "sujet concret, beaucoup à regarder", 5: "à regarder ensemble, avec des pauses", 7: "pour plus tard" };
+
+/* ---------- stockage local (facultatif) ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const seen = new Set(store.get("cps-seen-v1", ["dybWx0kAYJE"]));
+const liked = new Set(store.get("cps-liked-v1", []));
+const later = store.get("cps-later-v1", []);          // ordre d'ajout
+let hist = store.get("cps-history-v1", []);           // plus récent d'abord
+const prefs = Object.assign({ age: 0, hideSeen: false, collapsed: false, theme: "system" }, store.get("cps-prefs-v1", {}));
+const savePrefs = () => store.set("cps-prefs-v1", prefs);
+
+/* ---------- utilitaires ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const T = Object.fromEntries(DATA.themes.map(t => [t.key, t]));
+const E = Object.fromEntries(DATA.episodes.map(e => [e.id, e]));
+const COUNT = {}; DATA.episodes.forEach(e => { COUNT[e.t] = (COUNT[e.t] || 0) + 1; });
+const AVATAR = {}; DATA.episodes.forEach(e => { if (e.pick && !AVATAR[e.t]) AVATAR[e.t] = THUMB(e.id); });
+DATA.themes.forEach(t => { if (!AVATAR[t.key]) AVATAR[t.key] = THUMB(DATA.episodes.find(e => e.t === t.key).id); });
+const ageOk = e => !prefs.age || e.age <= prefs.age;
+const keep = e => ageOk(e) && !(prefs.hideSeen && seen.has(e.id));
+
+function applyTheme() {
+  const r = document.documentElement;
+  if (prefs.theme === "system") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", prefs.theme);
+}
+let toastTimer;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 1800); }
+
+/* ---------- routage : #theme-mer, #v-<id>, #plus-tard… ---------- */
+let route = { view: "home" };
+function parse(h) {
+  h = decodeURIComponent((h || "").replace(/^#/, ""));
+  if (h.startsWith("v-") && E[h.slice(2)]) return { view: "watch", id: h.slice(2) };
+  if (h.startsWith("theme-") && T[h.slice(6)]) return { view: "theme", key: h.slice(6) };
+  if (h.startsWith("cherche-")) return { view: "search", q: h.slice(8) };
+  if (["pour-commencer", "plus-tard", "jaime", "historique", "deja-vus", "a-propos"].includes(h)) return { view: h };
+  return { view: "home" };
+}
+function hashOf(r) {
+  switch (r.view) {
+    case "watch": return "v-" + r.id;
+    case "theme": return "theme-" + r.key;
+    case "search": return "cherche-" + encodeURIComponent(r.q);
+    case "home": return "";
+    default: return r.view;
+  }
+}
+function setHash(h) {
+  if (location.hash === (h ? "#" + h : "")) return;
+  try { if (h) location.hash = h; else window.history.pushState(null, "", location.pathname + location.search); } catch {}
+}
+function go(r) {
+  route = r;
+  setHash(hashOf(r));
+  closeDrawer();
+  render();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", () => { const r = parse(location.hash); if (hashOf(r) !== hashOf(route)) { route = r; render(); window.scrollTo(0, 0); } });
+window.addEventListener("popstate", () => { const r = parse(location.hash); if (hashOf(r) !== hashOf(route)) { route = r; render(); } });
+
+/* ---------- gabarits ---------- */
+function vcard(e) {
+  const t = T[e.t], s = seen.has(e.id);
+  return `<article class="vcard${s ? " is-seen" : ""}" style="--h:${t.hue}">
+    <a class="thumb" href="#v-${e.id}" data-watch="${e.id}" aria-label="${esc(e.title)}">
+      <img src="${THUMB(e.id)}" alt="" loading="lazy">
+      ${e.pick ? '<span class="start">Pour commencer</span>' : ""}
+      <span class="dur">${e.min} min</span>${s ? '<span class="seenbar" title="Déjà vu"></span>' : ""}
+    </a>
+    <div class="vmeta">
+      <a href="#theme-${t.key}" data-theme-go="${t.key}" tabindex="-1" aria-hidden="true"><img class="av" src="${AVATAR[t.key]}" alt=""></a>
+      <div class="vt"><a href="#v-${e.id}" data-watch="${e.id}"><h3>${esc(e.title)}</h3></a>
+        <div class="who"><a href="#theme-${t.key}" data-theme-go="${t.key}">${esc(t.name)}</a><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span>${s ? "<span>· déjà vu</span>" : ""}</div></div>
+    </div>
+  </article>`;
+}
+function srow(e, now) {
+  const t = T[e.t];
+  return `<div class="srow${now ? " now" : ""}" style="--h:${t.hue}">
+    <a class="thumb" href="#v-${e.id}" data-watch="${e.id}" aria-label="${esc(e.title)}"><img src="${THUMB(e.id)}" alt="" loading="lazy"><span class="dur">${e.min} min</span>${seen.has(e.id) ? '<span class="seenbar"></span>' : ""}</a>
+    <div class="vt"><a href="#v-${e.id}" data-watch="${e.id}"><h3>${esc(e.title)}</h3></a>
+      <div class="who"><span>${esc(t.name)}</span><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span></div></div>
+  </div>`;
+}
+const grid = list => `<div class="grid">${list.map(vcard).join("")}</div>`;
+const empty = (title, txt) => `<div class="empty"><strong>${title}</strong>${txt}</div>`;
+
+const ICONS = {
+  home: '<path d="M12 3 3 10.5V21h6.5v-6h5v6H21V10.5z"/>',
+  star: '<path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/>',
+  later: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7z"/>',
+  like: '<path d="M2 21h4V9H2v12zm20-11a2 2 0 0 0-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L13.2 1 6.6 7.6C6.2 8 6 8.5 6 9v10a2 2 0 0 0 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7.1c.1-.2.2-.5.2-.7v-2z"/>',
+  hist: '<path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9.1.1L9 12H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/>',
+  check: '<path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/>',
+  info: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>',
+  play: '<path d="M8 5v14l11-7z"/>',
+  ext: '<path d="M14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3zM19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2z"/>',
+};
+const ico = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg>`;
+
+function renderSide() {
+  const cur = route.view === "theme" ? "theme-" + route.key : route.view;
+  const item = (key, href, icon, label, n) =>
+    `<a href="#${href}" data-nav="${key}"${cur === key ? ' aria-current="page"' : ""}>${icon}<span class="lbl">${label}</span>${n != null ? `<span class="n">${n}</span>` : ""}</a>`;
+  $("#side").innerHTML =
+    item("home", "", ico("home"), "Accueil") +
+    item("pour-commencer", "pour-commencer", ico("star"), "Pour commencer", DATA.episodes.filter(e => e.pick).length) +
+    item("plus-tard", "plus-tard", ico("later"), "Plus tard", later.length || null) +
+    item("jaime", "jaime", ico("like"), "J'aime", liked.size || null) +
+    item("historique", "historique", ico("hist"), "Historique") +
+    item("deja-vus", "deja-vus", ico("check"), "Déjà vus", seen.size || null) +
+    `<hr><h4>Thèmes</h4><div class="themes-nav">` +
+    DATA.themes.map(t => item("theme-" + t.key, "theme-" + t.key, `<img class="av" src="${AVATAR[t.key]}" alt="">`, esc(t.name), COUNT[t.key])).join("") +
+    `</div><hr>` + item("a-propos", "a-propos", ico("info"), "À propos") +
+    `<p class="fine">Index non officiel des épisodes publiés sur la <a href="https://www.youtube.com/channel/UCENv8pH4LkzvuSV_qHIcslg" target="_blank" rel="noopener">chaîne YouTube C'est pas sorcier</a>.</p>`;
+}
+
+function chipsBar() {
+  const ages = [[0, "Tous les âges"], [4, "4 ans +"], [5, "Jusqu'à 6 ans"]];
+  const themeChips = DATA.themes.map(t =>
+    `<a class="chip" href="#theme-${t.key}" data-theme-go="${t.key}"${route.view === "theme" && route.key === t.key ? ' aria-current="true"' : ""}><span class="dot" style="background:hsl(${t.hue} 70% 50%)"></span>${esc(t.name)}</a>`).join("");
+  return `<div class="chips" role="toolbar" aria-label="Filtres">
+    ${ages.map(([a, l]) => `<button type="button" class="chip" data-age="${a}" aria-pressed="${prefs.age === a}">${l}</button>`).join("")}
+    <label class="switch"><input type="checkbox" id="hideSeen"${prefs.hideSeen ? " checked" : ""}> Masquer les déjà vus</label>
+    <span class="sep" aria-hidden="true"></span>${themeChips}</div>`;
+}
+
+/* ---------- vues ---------- */
+function viewHome() {
+  const picks = DATA.episodes.filter(e => e.pick && keep(e));
+  const rest = DATA.episodes.filter(e => keep(e));
+  const shuffled = rest.slice().sort((a, b) => order(a) - order(b));
+  return chipsBar() +
+    (picks.length ? `<div class="shelf-h"><h2>Pour commencer</h2><span>le plus facile d'accès dans chaque thème</span></div>${grid(picks)}` : "") +
+    `<div class="shelf-h"><h2>Tous les épisodes</h2><span>${rest.length} épisode${rest.length > 1 ? "s" : ""}</span></div>` +
+    (rest.length ? grid(shuffled) : empty("Rien à afficher", "Tous les épisodes de cet âge sont déjà vus. Décochez « Masquer les déjà vus » pour les revoir."));
+}
+// ordre du jour stable : on mélange les thèmes chaque jour, mais pas à chaque clic
+const DAY = Math.floor(Date.now() / 864e5);
+function order(e) { let h = DAY; for (const c of e.id) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
+
+function viewTheme(key) {
+  const t = T[key];
+  const list = DATA.episodes.filter(e => e.t === key && keep(e));
+  return chipsBar() + `<div class="pagehead" style="--h:${t.hue}"><img class="big" src="${AVATAR[key]}" alt="">
+    <div class="txt"><h1>${esc(t.name)}</h1><p>${esc(t.desc)} ${COUNT[key]} épisodes, dont ${DATA.episodes.filter(e => e.t === key && seen.has(e.id)).length} déjà vus.</p></div></div>` +
+    (list.length ? grid(list) : empty("Rien à afficher", "Aucun épisode de ce thème ne correspond aux filtres choisis."));
+}
+
+function viewList(kind) {
+  const conf = {
+    "pour-commencer": ["Pour commencer", "Un épisode facile d'accès par thème, pour découvrir l'émission.", DATA.episodes.filter(e => e.pick)],
+    "plus-tard": ["Plus tard", "Les épisodes mis de côté avec « Plus tard ».", later.map(id => E[id]).filter(Boolean)],
+    "jaime": ["J'aime", "Les épisodes marqués « J'aime ».", [...liked].map(id => E[id]).filter(Boolean)],
+    "historique": ["Historique", "Les épisodes ouverts récemment, du plus récent au plus ancien.", hist.map(id => E[id]).filter(Boolean)],
+    "deja-vus": ["Déjà vus", "Les épisodes cochés « Déjà vu ».", DATA.episodes.filter(e => seen.has(e.id))],
+  }[kind];
+  const [title, sub, list] = conf;
+  const emptyTxt = {
+    "plus-tard": "Ouvrez un épisode et touchez « Plus tard » pour le retrouver ici.",
+    "jaime": "Ouvrez un épisode et touchez « J'aime » pour le retrouver ici.",
+    "historique": "Les épisodes que vous ouvrez apparaîtront ici.",
+    "deja-vus": "Ouvrez un épisode et touchez « Déjà vu » après l'avoir regardé.",
+  }[kind];
+  const clear = kind === "historique" && list.length ? ` <button type="button" class="linkbtn" id="clearHist">Effacer l'historique</button>` : "";
+  return `<div class="pagehead"><div class="txt"><h1>${title}</h1><p>${sub}${clear}</p></div></div>` +
+    (list.length ? grid(list) : empty("Rien pour l'instant", emptyTxt));
+}
+
+function viewSearch(q) {
+  const n = norm(q.trim());
+  const words = n.split(/\s+/).filter(Boolean);
+  const list = DATA.episodes.filter(e => { const h = norm(e.title + " " + T[e.t].name + " " + T[e.t].desc); return words.every(w => h.includes(w)); }).filter(keep);
+  return chipsBar() + `<div class="pagehead"><div class="txt"><h1>« ${esc(q)} »</h1><p>${list.length} résultat${list.length > 1 ? "s" : ""}${prefs.age ? " pour " + (prefs.age === 4 ? "les 4 ans +" : "les moins de 7 ans") : ""}.</p></div></div>` +
+    (list.length ? grid(list) : empty("Aucun épisode trouvé", "Essayez un autre mot (dauphin, volcan, pompier…) ou choisissez « Tous les âges »."));
+}
+
+function viewWatch(id) {
+  const e = E[id], t = T[e.t];
+  const yt = `https://www.youtube.com/watch?v=${e.id}`;
+  const player = CAN_EMBED
+    ? `<iframe src="https://www.youtube-nocookie.com/embed/${e.id}?rel=0&autoplay=1" title="${esc(e.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
+    : `<img class="poster" src="${THUMB(e.id)}" alt=""><div class="go"><a class="btn" href="${yt}" target="_blank" rel="noopener">${ico("play")}Regarder sur YouTube</a><small>L'épisode s'ouvre dans un nouvel onglet, sur la chaîne officielle.</small></div>`;
+  const same = DATA.episodes.filter(x => x.t === e.t);
+  const idx = same.findIndex(x => x.id === e.id);
+  const next = same.slice(idx + 1).concat(same.slice(0, idx)).filter(x => ageOk(x));
+  const other = DATA.episodes.filter(x => x.t !== e.t && x.pick && ageOk(x)).slice(0, 8);
+  const btn = (act, on, icon, label, onLabel) => `<button type="button" class="act" data-act="${act}" aria-pressed="${on}">${ico(icon)}${on ? onLabel : label}</button>`;
+  return `<div class="watch" style="--h:${t.hue}">
+    <div class="primary">
+      <div class="player">${player}</div>
+      <h1>${esc(e.title)}</h1>
+      <div class="wbar">
+        <a class="chan" href="#theme-${t.key}" data-theme-go="${t.key}"><img class="av" src="${AVATAR[t.key]}" alt=""><div><b>${esc(t.name)}</b><span>${COUNT[t.key]} épisodes dans ce thème</span></div></a>
+        <div class="acts">
+          ${btn("seen", seen.has(e.id), "check", "Déjà vu", "Déjà vu ✓")}
+          ${btn("like", liked.has(e.id), "like", "J'aime", "J'aime ✓")}
+          ${btn("later", later.includes(e.id), "later", "Plus tard", "Dans Plus tard")}
+          ${CAN_EMBED ? `<a class="act" href="${yt}" target="_blank" rel="noopener">${ico("ext")}YouTube</a>` : ""}
+        </div>
+      </div>
+      <div class="desc">
+        <p><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span> ${AGE_HINT[e.age]} · ${e.min} min${e.pick ? " · un bon épisode pour commencer ce thème" : ""}</p>
+        <p>${esc(t.desc)}</p>
+        <p>Épisode complet sur la <a href="${yt}" target="_blank" rel="noopener">chaîne officielle C'est pas sorcier</a>. L'âge est une estimation d'après le sujet, pas une classification officielle.</p>
+      </div>
+    </div>
+    <aside class="secondary" aria-label="À suivre">
+      <h2>À suivre dans « ${esc(t.name)} »</h2>
+      ${next.map(x => srow(x)).join("") || '<p class="empty">C\'est le seul épisode de ce thème pour cet âge.</p>'}
+      ${other.length ? `<h2 style="margin-top:12px">Autres thèmes</h2>${other.map(x => srow(x)).join("")}` : ""}
+    </aside>
+  </div>`;
+}
+
+function viewAbout() {
+  const picks = DATA.episodes.filter(e => e.pick).length;
+  const byAge = a => DATA.episodes.filter(e => e.age === a).length;
+  const theme = [["system", "Système"], ["light", "Clair"], ["dark", "Sombre"]];
+  return `<div class="about">
+    <h1>À propos</h1>
+    <div class="stats">
+      <div class="stat"><b>${DATA.episodes.length}</b><span>épisodes</span></div>
+      <div class="stat"><b>${DATA.themes.length}</b><span>thèmes</span></div>
+      <div class="stat"><b>${picks}</b><span>pour commencer</span></div>
+      <div class="stat"><b>${seen.size}</b><span>déjà vus ici</span></div>
+    </div>
+    <p>Une sélection d'épisodes de <i>C'est pas sorcier</i> pour les petits curieux, rangés par thème avec un âge indicatif. Chaque épisode renvoie vers la chaîne YouTube officielle de l'émission. Ce site est un index fait à la maison, sans lien avec France Télévisions.</p>
+    <h2>Les âges</h2>
+    <ul>
+      <li><span class="pill a4">4 ans +</span> ${AGE_HINT[4]} (${byAge(4)} épisodes)</li>
+      <li><span class="pill a5">5-6 ans</span> ${AGE_HINT[5]} (${byAge(5)} épisodes)</li>
+      <li><span class="pill a7">7 ans +</span> ${AGE_HINT[7]} (${byAge(7)} épisodes)</li>
+    </ul>
+    <p>Les âges sont une estimation d'après le sujet de chaque épisode. Les épisodes sur le Père Noël ont été laissés de côté exprès.</p>
+    <h2>Vos listes</h2>
+    <p>« Déjà vu », « J'aime », « Plus tard » et l'historique sont gardés dans ce navigateur seulement. Ils ne passent pas d'un appareil à l'autre.</p>
+    <h2>Affichage</h2>
+    <div class="seg" role="group" aria-label="Thème d'affichage">${theme.map(([k, l]) => `<button type="button" data-theme-pref="${k}" aria-pressed="${prefs.theme === k}">${l}</button>`).join("")}</div>
+    <h2>Données</h2>
+    <p>Liste relevée le ${new Date(DATA.listed).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })} sur la chaîne officielle. Le fichier <a href="https://github.com/w3cdotorg/c-est-pas-sorcier-tube/blob/main/episodes.json" target="_blank" rel="noopener">episodes.json</a> et le code sont sur <a href="https://github.com/w3cdotorg/c-est-pas-sorcier-tube" target="_blank" rel="noopener">GitHub</a>. Interface inspirée de <a href="https://hackertube.org/" target="_blank" rel="noopener">HackerTube</a>.</p>
+  </div>`;
+}
+
+function render() {
+  if (route.view === "watch") {
+    hist = [route.id, ...hist.filter(x => x !== route.id)].slice(0, 60);
+    store.set("cps-history-v1", hist);
+  }
+  const m = $("#main");
+  switch (route.view) {
+    case "watch": m.innerHTML = viewWatch(route.id); document.title = E[route.id].title + " · C'est pas sorcier Tube"; break;
+    case "theme": m.innerHTML = viewTheme(route.key); document.title = T[route.key].name + " · C'est pas sorcier Tube"; break;
+    case "search": m.innerHTML = viewSearch(route.q); document.title = route.q + " · C'est pas sorcier Tube"; break;
+    case "a-propos": m.innerHTML = viewAbout(); document.title = "À propos · C'est pas sorcier Tube"; break;
+    case "home": m.innerHTML = viewHome(); document.title = "C'est pas sorcier Tube"; break;
+    default: m.innerHTML = viewList(route.view); document.title = "C'est pas sorcier Tube";
+  }
+  if (route.view !== "search") $("#q").value = "";
+  renderSide();
+  const active = document.querySelector('.chips [aria-current="true"]');
+  if (active) active.scrollIntoView({ block: "nearest", inline: "center" });
+}
+
+/* ---------- interactions ---------- */
+const narrow = () => matchMedia("(max-width: 860px)").matches;
+function closeDrawer() { document.body.classList.remove("drawer"); $("#veil").hidden = true; }
+$("#menu").addEventListener("click", () => {
+  if (narrow()) { const open = !document.body.classList.contains("drawer"); document.body.classList.toggle("drawer", open); $("#veil").hidden = !open; }
+  else { prefs.collapsed = !prefs.collapsed; document.body.classList.toggle("collapsed", prefs.collapsed); savePrefs(); }
+});
+$("#veil").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", ev => { if (ev.key === "Escape") closeDrawer(); });
+
+$("#searchForm").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const q = $("#q").value.trim();
+  go(q ? { view: "search", q } : { view: "home" });
+  $("#q").blur();
+});
+
+document.addEventListener("click", ev => {
+  const a = ev.target.closest("[data-watch],[data-theme-go],[data-nav],[data-go]");
+  if (a && !ev.metaKey && !ev.ctrlKey && !ev.shiftKey) {
+    ev.preventDefault();
+    if (a.dataset.watch) return go({ view: "watch", id: a.dataset.watch });
+    if (a.dataset.themeGo) return go({ view: "theme", key: a.dataset.themeGo });
+    if (a.dataset.nav) return go(parse("#" + a.dataset.nav));
+    return go({ view: "home" });
+  }
+  const ageB = ev.target.closest("[data-age]");
+  if (ageB) { prefs.age = +ageB.dataset.age; savePrefs(); return render(); }
+  const act = ev.target.closest("[data-act]");
+  if (act && route.view === "watch") {
+    const id = route.id;
+    if (act.dataset.act === "seen") { seen.has(id) ? seen.delete(id) : seen.add(id); store.set("cps-seen-v1", [...seen]); toast(seen.has(id) ? "Coché comme déjà vu" : "Retiré des déjà vus"); }
+    if (act.dataset.act === "like") { liked.has(id) ? liked.delete(id) : liked.add(id); store.set("cps-liked-v1", [...liked]); toast(liked.has(id) ? "Ajouté à J'aime" : "Retiré de J'aime"); }
+    if (act.dataset.act === "later") { const i = later.indexOf(id); i >= 0 ? later.splice(i, 1) : later.push(id); store.set("cps-later-v1", later); toast(i >= 0 ? "Retiré de Plus tard" : "Ajouté à Plus tard"); }
+    // on met à jour les boutons et le menu sans recharger le lecteur
+    const fresh = document.createElement("div"); fresh.innerHTML = viewWatch(id);
+    $(".acts").replaceWith(fresh.querySelector(".acts"));
+    renderSide();
+    return;
+  }
+  const tp = ev.target.closest("[data-theme-pref]");
+  if (tp) { prefs.theme = tp.dataset.themePref; savePrefs(); applyTheme(); return render(); }
+  if (ev.target.closest("#clearHist")) { hist = []; store.set("cps-history-v1", hist); return render(); }
+});
+document.addEventListener("change", ev => {
+  if (ev.target.id === "hideSeen") { prefs.hideSeen = ev.target.checked; savePrefs(); render(); }
+});
+
+$("#dice").addEventListener("click", () => {
+  const scope = route.view === "theme" ? DATA.episodes.filter(e => e.t === route.key) : DATA.episodes;
+  const cap = prefs.age || 5;   // au hasard : jamais les 7 ans + sauf si on est déjà sur ce filtre
+  let pool = scope.filter(e => !seen.has(e.id) && e.age <= cap);
+  if (!pool.length) pool = scope.filter(e => e.age <= cap);
+  if (!pool.length) return;
+  go({ view: "watch", id: pool[Math.floor(Math.random() * pool.length)].id });
+});
+
+/* ---------- démarrage ---------- */
+applyTheme();
+document.body.classList.toggle("collapsed", !!prefs.collapsed);
+route = parse(location.hash);
+render();
+</script>
+</body>
+</html>
