@@ -132,7 +132,7 @@ body.collapsed main { padding-left: calc(76px + 12px); }
 .vt h3 { font: 600 16px/1.3 var(--display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .vt .who { color: var(--muted); font-size: 13.5px; margin-top: 3px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .vt .who a:hover { color: var(--ink); }
-.seenbtn { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 7px; border-radius: 14px;
+.seenbtn { margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 7px; border-radius: 14px;
   border: 1px solid var(--bg3); color: var(--muted); font-weight: 600; font-size: 12.5px; white-space: nowrap; }
 .seenbtn svg { width: 16px; height: 16px; }
 .seenbtn:hover { background: var(--hover); color: var(--ink); }
@@ -329,8 +329,8 @@ function vcard(e) {
     <div class="vmeta">
       <a href="#theme-${t.key}" data-theme-go="${t.key}" tabindex="-1" aria-hidden="true"><img class="av" src="${AVATAR[t.key]}" alt=""></a>
       <div class="vt"><a href="#v-${e.id}" data-watch="${e.id}"><h3>${esc(e.title)}</h3></a>
-        <div class="who"><a href="#theme-${t.key}" data-theme-go="${t.key}">${esc(t.name)}</a><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span>
-          <button type="button" class="seenbtn" data-seen="${e.id}" aria-pressed="${s}" aria-label="${s ? "Décocher" : "Cocher"} « ${esc(e.title)} » comme déjà vu">${ico("check")}<span>${s ? "Vu" : "Déjà vu ?"}</span></button></div></div>
+        <div class="who"><a href="#theme-${t.key}" data-theme-go="${t.key}">${esc(t.name)}</a><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span></div>
+        <button type="button" class="seenbtn" data-seen="${e.id}" aria-pressed="${s}" aria-label="${s ? "Décocher" : "Cocher"} « ${esc(e.title)} » comme déjà vu">${ico("check")}<span>${s ? "Vu" : "Déjà vu ?"}</span></button></div>
     </div>
   </article>`;
 }
