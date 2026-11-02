@@ -232,6 +232,7 @@ body.collapsed main { padding-left: calc(76px + 12px); }
 
 <script>
 const DATA = /*DATA*/;
+const SITE = /*SITE*/;   // réglages propres à chaque version (site GitHub ou artefact)
 const THUMB = id => `thumbs/${id}.jpg`;
 const CAN_EMBED = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:";
 const AGE_LABEL = { 4: "4 ans +", 5: "5-6 ans", 7: "7 ans +" };
@@ -242,7 +243,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
 };
-const seen = new Set(store.get("cps-seen-v1", ["dybWx0kAYJE"]));
+const seen = new Set(store.get("cps-seen-v1", SITE.seedSeen));
 const liked = new Set(store.get("cps-liked-v1", []));
 const later = store.get("cps-later-v1", []);          // ordre d'ajout
 let hist = store.get("cps-history-v1", []);           // plus récent d'abord
@@ -351,7 +352,7 @@ function renderSide() {
     item("plus-tard", "plus-tard", ico("later"), "Plus tard", later.length || null) +
     item("jaime", "jaime", ico("like"), "J'aime", liked.size || null) +
     item("historique", "historique", ico("hist"), "Historique") +
-    item("deja-vus", "deja-vus", ico("check"), "Déjà vus", seen.size || null) +
+    (SITE.seenNav ? item("deja-vus", "deja-vus", ico("check"), "Déjà vus", seen.size || null) : "") +
     `<hr><h4>Thèmes</h4><div class="themes-nav">` +
     DATA.themes.map(t => item("theme-" + t.key, "theme-" + t.key, `<img class="av" src="${AVATAR[t.key]}" alt="">`, esc(t.name), COUNT[t.key])).join("") +
     `</div><hr>` + item("a-propos", "a-propos", ico("info"), "À propos") +

@@ -16,13 +16,22 @@ FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox
            "font-size='16' fill='%233a2a00'%3E%3F!%3C/text%3E%3C/svg%3E")
 
 
-def page() -> str:
+# Site GitHub : rien de coché d'avance ; chaque navigateur garde ses « Déjà vu » en localStorage.
+# Artefact : part de l'épisode déjà vu à la maison.
+SITES = {
+    "github": {"seedSeen": [], "seenNav": True},
+    "artifact": {"seedSeen": ["dybWx0kAYJE"], "seenNav": True},
+}
+
+
+def page(site: str) -> str:
     data = json.loads((ROOT / "episodes.json").read_text(encoding="utf8"))
     payload = {k: data[k] for k in ("listed", "themes", "episodes")}
     blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     tpl = (ROOT / "template.html").read_text(encoding="utf8")
-    assert tpl.count("/*DATA*/") == 1, "marqueur /*DATA*/ absent ou en double"
-    return tpl.replace("/*DATA*/", blob)
+    for mark in ("/*DATA*/", "/*SITE*/"):
+        assert tpl.count(mark) == 1, f"marqueur {mark} absent ou en double"
+    return tpl.replace("/*DATA*/", blob).replace("/*SITE*/", json.dumps(SITES[site]))
 
 
 def standalone(body: str) -> str:
@@ -37,11 +46,11 @@ def standalone(body: str) -> str:
 
 
 if __name__ == "__main__":
-    body = page()
     if len(sys.argv) == 3 and sys.argv[1] == "--artifact":
+        body = page("artifact")
         out = pathlib.Path(sys.argv[2]); out.mkdir(parents=True, exist_ok=True)
         (out / "index.html").write_text(body, encoding="utf8")
         print("fragment ->", out / "index.html")
     else:
-        (ROOT / "index.html").write_text(standalone(body), encoding="utf8")
+        (ROOT / "index.html").write_text(standalone(page("github")), encoding="utf8")
         print("site ->", ROOT / "index.html")
