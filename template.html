@@ -124,6 +124,11 @@ body.collapsed main { padding-left: calc(76px + 12px); }
 .vt h3 { font: 600 16px/1.3 var(--display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .vt .who { color: var(--muted); font-size: 13.5px; margin-top: 3px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .vt .who a:hover { color: var(--ink); }
+.seenbtn { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 7px; border-radius: 14px;
+  border: 1px solid var(--bg3); color: var(--muted); font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+.seenbtn svg { width: 16px; height: 16px; }
+.seenbtn:hover { background: var(--hover); color: var(--ink); }
+.seenbtn[aria-pressed="true"] { background: var(--link); border-color: var(--link); color: var(--bg); }
 .pill { display: inline-flex; align-items: center; font: 700 11.5px var(--body); padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
 .pill.a4 { color: var(--age4); background: var(--age4-bg); }
 .pill.a5 { color: var(--age5); background: var(--age5-bg); }
@@ -314,7 +319,8 @@ function vcard(e) {
     <div class="vmeta">
       <a href="#theme-${t.key}" data-theme-go="${t.key}" tabindex="-1" aria-hidden="true"><img class="av" src="${AVATAR[t.key]}" alt=""></a>
       <div class="vt"><a href="#v-${e.id}" data-watch="${e.id}"><h3>${esc(e.title)}</h3></a>
-        <div class="who"><a href="#theme-${t.key}" data-theme-go="${t.key}">${esc(t.name)}</a><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span>${s ? "<span>· déjà vu</span>" : ""}</div></div>
+        <div class="who"><a href="#theme-${t.key}" data-theme-go="${t.key}">${esc(t.name)}</a><span class="pill a${e.age}">${AGE_LABEL[e.age]}</span>
+          <button type="button" class="seenbtn" data-seen="${e.id}" aria-pressed="${s}" aria-label="${s ? "Décocher" : "Cocher"} « ${esc(e.title)} » comme déjà vu">${ico("check")}<span>${s ? "Vu" : "Déjà vu ?"}</span></button></div></div>
     </div>
   </article>`;
 }
@@ -383,11 +389,12 @@ function viewHome() {
 const DAY = Math.floor(Date.now() / 864e5);
 function order(e) { let h = DAY; for (const c of e.id) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
 
+const seenIn = key => DATA.episodes.filter(e => e.t === key && seen.has(e.id)).length;
 function viewTheme(key) {
   const t = T[key];
   const list = DATA.episodes.filter(e => e.t === key && keep(e));
   return chipsBar() + `<div class="pagehead" style="--h:${t.hue}"><img class="big" src="${AVATAR[key]}" alt="">
-    <div class="txt"><h1>${esc(t.name)}</h1><p>${esc(t.desc)} ${COUNT[key]} épisodes, dont ${DATA.episodes.filter(e => e.t === key && seen.has(e.id)).length} déjà vus.</p></div></div>` +
+    <div class="txt"><h1>${esc(t.name)}</h1><p>${esc(t.desc)} ${COUNT[key]} épisodes, dont ${seenIn(key)} déjà vu${seenIn(key) > 1 ? "s" : ""}.</p></div></div>` +
     (list.length ? grid(list) : empty("Rien à afficher", "Aucun épisode de ce thème ne correspond aux filtres choisis."));
 }
 
@@ -531,6 +538,17 @@ document.addEventListener("click", ev => {
     if (a.dataset.themeGo) return go({ view: "theme", key: a.dataset.themeGo });
     if (a.dataset.nav) return go(parse("#" + a.dataset.nav));
     return go({ view: "home" });
+  }
+  const sb = ev.target.closest("[data-seen]");
+  if (sb) {
+    const id = sb.dataset.seen;
+    seen.has(id) ? seen.delete(id) : seen.add(id);
+    store.set("cps-seen-v1", [...seen]);
+    toast(seen.has(id) ? "Coché comme déjà vu" : "Retiré des déjà vus");
+    render();
+    const again = document.querySelector(`[data-seen="${CSS.escape(id)}"]`);
+    if (again) again.focus({ preventScroll: true });
+    return;
   }
   const ageB = ev.target.closest("[data-age]");
   if (ageB) { prefs.age = +ageB.dataset.age; savePrefs(); return render(); }
